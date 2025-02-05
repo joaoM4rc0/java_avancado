@@ -24,6 +24,9 @@ bin/
 
 ### VS Code ###
 .vscode/
-.docker-compose.yml/
+
+### Docker ###
+docker-compose.yml
+
 ### Mac OS ###
 .DS_Store
