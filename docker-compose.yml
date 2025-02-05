@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mysql:9.1.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devdojo_maratona
+    volumes:
+      - devdojo_maratona_data:/var/lib/mysql
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    ports:
+      - "3307:3306"  # Corrected port mapping
+    networks:
+      - aprendendo_default
+
+volumes:
+  devdojo_maratona_data:
+
+networks:
+  aprendendo_default:
