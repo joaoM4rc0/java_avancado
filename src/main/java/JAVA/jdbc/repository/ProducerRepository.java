@@ -1,7 +1,7 @@
-package repository;
+package JAVA.jdbc.repository;
 
 import JAVA.jdbc.conexao.ConnectionFactory;
-import dominio.Producer;
+import JAVA.jdbc.dominio.Producer;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.Connection;

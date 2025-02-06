@@ -1,4 +1,4 @@
-package dominio;
+package JAVA.jdbc.dominio;
 
 import lombok.Builder;
 import lombok.Data;
