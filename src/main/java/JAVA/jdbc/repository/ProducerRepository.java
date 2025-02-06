@@ -13,7 +13,16 @@ public class ProducerRepository {
         String sql = "INSERT INTO `devdojo_maratona`.`producer` (`name`) VALUES('%s');".formatted(producer.getName());
         try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement() ) {
             int rowsAffected = stmt.executeUpdate(sql);
-            log.info("####### linhas afetadas {} #######", rowsAffected);
+            log.info("####### Inserindo name: {}, linhas afetadas {} #######",producer.getName(),  rowsAffected);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void Delete(int id) {
+        String sql = "DELETE FROM `devdojo_maratona`.`producer` WHERE id=('%d');".formatted(id);
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement() ) {
+            int rowsAffected = stmt.executeUpdate(sql);
+            log.info("####### deletando id: {}, linhas afetadas {} #######",id, rowsAffected);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
