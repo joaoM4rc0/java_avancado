@@ -5,8 +5,12 @@ import JAVA.jdbc.dominio.Producer;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 @Log4j2
 public class ProducerRepository {
     public static void save(Producer producer) {
@@ -35,5 +39,24 @@ public class ProducerRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static List<Producer> FindAll() {
+        log.info("###### FindALL produces");
+        String sql = "SELECT id, name FROM devdojo_maratona.producer";
+        List<Producer> producers = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement() ) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()) {
+                Producer producer = Producer
+                        .builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id"))
+                        .build();
+                producers.add(producer);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return producers;
     }
 }
