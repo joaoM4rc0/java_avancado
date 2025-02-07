@@ -8,9 +8,17 @@ public class ProdutoService {
         ProducerRepository.save(producer);
     }
     public static void Delete(int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("nao é permitido id menor ou igual a '0'");
+        RequiredValidId(id);
+        ProducerRepository.Delete(id);
+    }
+    public static void Update(Producer producer) {
+        RequiredValidId(producer.getId());
+        ProducerRepository.Update(producer);
+    }
+
+    private static void RequiredValidId(Integer id) {
+        if (id == null || id <=0) {
+            throw new IllegalArgumentException("invalid value for id");
         }
-            ProducerRepository.Delete(id);
     }
 }

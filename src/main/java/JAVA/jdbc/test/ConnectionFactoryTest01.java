@@ -6,8 +6,7 @@ import JAVA.jdbc.service.ProdutoService;
 
 public class ConnectionFactoryTest01 {
     public static void main(String[] args) {
-        Producer producer = Producer.builder().name("matheus").build();
-//        ProdutoService.save(producer);
-        ProdutoService.Delete(5);
+        Producer producer = Producer.builder().name("marcos").id(2).build();
+        ProdutoService.Update(producer);
     }
 }

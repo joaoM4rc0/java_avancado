@@ -27,4 +27,13 @@ public class ProducerRepository {
             throw new RuntimeException(e);
         }
     }
+    public static void Update(Producer producer) {
+        String sql = "UPDATE `devdojo_maratona`.`producer`SET name='%s' WHERE id=('%d');".formatted(producer.getName(), producer.getId());
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement() ) {
+            int rowsAffected = stmt.executeUpdate(sql);
+            log.info("####### atualizando : {}, linhas afetadas {} #######",producer.getId(), rowsAffected);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
