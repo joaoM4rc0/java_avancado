@@ -59,4 +59,23 @@ public class ProducerRepository {
         }
         return producers;
     }
+    public static List<Producer> FindByName(String name) {
+        log.info("###### FindByname produces");
+        List<Producer> producers = new ArrayList<>();
+        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like'%%%s%%';"
+                .formatted(name);
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement() ) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()) {
+                Producer producer = Producer
+                        .builder()
+                        .name(rs.getString("name"))
+                        .build();
+                producers.add(producer);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return producers;
+    }
 }
