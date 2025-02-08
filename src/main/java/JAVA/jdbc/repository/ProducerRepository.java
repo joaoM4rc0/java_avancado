@@ -4,10 +4,7 @@ import JAVA.jdbc.conexao.ConnectionFactory;
 import JAVA.jdbc.dominio.Producer;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,5 +74,22 @@ public class ProducerRepository {
             throw new RuntimeException(e);
         }
         return producers;
+    }
+    public static void ShowProducerMetaData() {
+        log.info("###### MetaData");
+        String sql = "SELECT * FROM devdojo_maratona.producer";
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            ResultSetMetaData metaData = rs.getMetaData();
+            rs.next();
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                log.info("nome da tabela '{}'", metaData.getTableName(i));
+                log.info("nome da coluna '{}'", metaData.getColumnName(i));
+                log.info("nome da base de dados '{}'", metaData.getCatalogName(i));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

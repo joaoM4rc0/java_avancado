@@ -9,5 +9,6 @@ import java.util.List;
 public class ConnectionFactoryTest01 {
     public static void main(String[] args) {
         ProdutoService.FindByName("cla");
+        ProdutoService.ShowMetaData();
     }
 }

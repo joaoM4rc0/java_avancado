@@ -36,6 +36,8 @@ public class ProdutoService {
     public static void FindByName(String name) {
         List<Producer> producers = ProducerRepository.FindByName(name);
         log.info(producers);
-
+    }
+    public static void ShowMetaData() {
+        ProducerRepository.ShowProducerMetaData();
     }
 }
