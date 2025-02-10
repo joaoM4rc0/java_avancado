@@ -92,4 +92,15 @@ public class ProducerRepository {
             throw new RuntimeException(e);
         }
     }
+    public static void ShowDriverMetaData() {
+        log.info("###### Driver MetaData");
+        try (Connection conn = ConnectionFactory.GetConnection();) {
+            DatabaseMetaData metaData = conn.getMetaData();
+            if (metaData.supportsTransactions()) {
+                log.info("o banco de dados suporta transacoes");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

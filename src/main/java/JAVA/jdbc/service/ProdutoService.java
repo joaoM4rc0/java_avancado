@@ -40,4 +40,8 @@ public class ProdutoService {
     public static void ShowMetaData() {
         ProducerRepository.ShowProducerMetaData();
     }
+    public static void ShowDriverMetaData() {
+        ProducerRepository.ShowDriverMetaData();
+    }
+
 }
