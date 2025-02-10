@@ -46,5 +46,13 @@ public class ProdutoService {
     public static void ShowTypeScrollInsensitive() {
         ProducerRepository.showTypeScrollInsensitive();
     }
+    public static void FindByNameAndUpdate(String name) {
+        List<Producer> producers = ProducerRepository.FindByNameAndUpdate(name);
+        log.info(producers);
+    }
+    public static void FindByNameAndInsertWhenNotFound(String name) {
+        List<Producer> producers = ProducerRepository.FindByNameAndInsertWhenNotFound(name);
+        log.info(producers);
+    }
 
 }

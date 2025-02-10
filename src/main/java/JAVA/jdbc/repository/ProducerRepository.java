@@ -103,7 +103,6 @@ public class ProducerRepository {
             throw new RuntimeException(e);
         }
     }
-
     public static void showTypeScrollInsensitive() {
         log.info("###### FindByname produces");
         String sql = "SELECT * FROM devdojo_maratona.producer;";
@@ -118,5 +117,61 @@ public class ProducerRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static List<Producer> FindByNameAndUpdate(String name) {
+        log.info("###### FindByname produces");
+        List<Producer> producers = new ArrayList<>();
+        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like'%%%s%%';"
+                .formatted(name);
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE) ) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()) {
+                rs.updateString("name", rs.getString("name").toUpperCase());
+//                rs.cancelRowUpdates();
+                rs.updateRow();
+                Producer producer = Producer
+                        .builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id"))
+                        .build();
+                producers.add(producer);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return producers;
+    }
+
+    public static List<Producer> FindByNameAndInsertWhenNotFound(String name) {
+        log.info("###### FindByname produces");
+        List<Producer> producers = new ArrayList<>();
+        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like'%%%s%%';"
+                .formatted(name);
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE) ) {
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) return producers;
+            insertNewProducer(name, rs);
+            getProducer(rs, producers);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return producers;
+    }
+
+    private static void insertNewProducer(String name, ResultSet rs) throws SQLException {
+        rs.moveToInsertRow();
+        rs.updateString("name", name);
+        rs.insertRow();
+    }
+
+    private static void getProducer(ResultSet rs, List<Producer> producers) throws SQLException {
+        rs.beforeFirst();
+        rs.next();
+        Producer producer = Producer
+                .builder()
+                .name(rs.getString("name"))
+                .id(rs.getInt("id"))
+                .build();
+        producers.add(producer);
     }
 }
