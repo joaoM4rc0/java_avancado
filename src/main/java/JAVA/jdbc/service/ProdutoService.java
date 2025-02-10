@@ -43,5 +43,8 @@ public class ProdutoService {
     public static void ShowDriverMetaData() {
         ProducerRepository.ShowDriverMetaData();
     }
+    public static void ShowTypeScrollInsensitive() {
+        ProducerRepository.showTypeScrollInsensitive();
+    }
 
 }

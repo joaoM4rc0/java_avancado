@@ -103,4 +103,20 @@ public class ProducerRepository {
             throw new RuntimeException(e);
         }
     }
+
+    public static void showTypeScrollInsensitive() {
+        log.info("###### FindByname produces");
+        String sql = "SELECT * FROM devdojo_maratona.producer;";
+        try (Connection conn = ConnectionFactory.GetConnection();
+             Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE) ) {
+            ResultSet rs = stmt.executeQuery(sql);
+            log.info("last row? '{}'", rs.last());
+            log.info(Producer.builder().name(rs.getString("name")).id(rs.getInt("id")).build());
+            System.out.println("------------------------------------");
+            log.info("absolut row? '{}'", rs.absolute(2));
+            log.info(Producer.builder().name(rs.getString("name")).id(rs.getInt("id")).build());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
