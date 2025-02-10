@@ -158,12 +158,51 @@ public class ProducerRepository {
         return producers;
     }
 
+    public static void FindByNameAndDelete(String name) {
+        log.info("###### FindByname produces");
+        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like'%%%s%%';"
+                .formatted(name);
+        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE) ) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                rs.deleteRow();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void insertNewProducer(String name, ResultSet rs) throws SQLException {
         rs.moveToInsertRow();
         rs.updateString("name", name);
         rs.insertRow();
     }
 
+    public static List<Producer> FindByNamePreparedStatement(String name) {
+        log.info("###### Find Statement produces");
+        String sql = "SELECT id, name FROM devdojo_maratona.producer WHERE name like ?;";
+        List<Producer> producers = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.GetConnection();
+             PreparedStatement ps = preparedStatement(conn, sql, name);
+            ResultSet rs = ps.executeQuery()) {
+            while(rs.next()) {
+                Producer producer = Producer
+                        .builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id"))
+                        .build();
+                producers.add(producer);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return producers;
+    }
+    private static PreparedStatement preparedStatement(Connection conn, String sql, String name) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, String.format("%%%s%%",name));
+        return ps;
+    }
     private static void getProducer(ResultSet rs, List<Producer> producers) throws SQLException {
         rs.beforeFirst();
         rs.next();

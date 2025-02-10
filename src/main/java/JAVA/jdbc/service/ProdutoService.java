@@ -54,5 +54,11 @@ public class ProdutoService {
         List<Producer> producers = ProducerRepository.FindByNameAndInsertWhenNotFound(name);
         log.info(producers);
     }
+    public static void FindByNameAndInsertDelete(String name) {
+        ProducerRepository.FindByNameAndDelete(name);
+    }
+    public static List<Producer> FindByNamePreparedStatement(String name) {
+        return ProducerRepository.FindByNamePreparedStatement(name);
+    }
 
 }
