@@ -180,10 +180,13 @@ public class ProducerRepository {
 
     public static List<Producer> FindByNamePreparedStatement(String name) {
         log.info("###### Find Statement produces");
+        // usa um placeholder '?' que vai ser substituido pelo valor de 'nome'
         String sql = "SELECT id, name FROM devdojo_maratona.producer WHERE name like ?;";
         List<Producer> producers = new ArrayList<>();
+        // get the connection
         try (Connection conn = ConnectionFactory.GetConnection();
              PreparedStatement ps = preparedStatement(conn, sql, name);
+             // Ele define o valor do placeholder (?) na consulta SQL.
             ResultSet rs = ps.executeQuery()) {
             while(rs.next()) {
                 Producer producer = Producer
@@ -192,6 +195,8 @@ public class ProducerRepository {
                         .id(rs.getInt("id"))
                         .build();
                 producers.add(producer);
+                // a cada iteração do while ele define um novo producer com os valores fornecidos,
+                // e adiciona a uma lista
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -200,7 +205,11 @@ public class ProducerRepository {
     }
     private static PreparedStatement preparedStatement(Connection conn, String sql, String name) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(sql);
+        //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",name));
+        //  adiciona % antes e depois do valor de name, transformando-o em um padrão de busca com LIKE.
+        // por exemplo se name for 'mar' e tiver nomes como: maria, marcos, marcio, todos ele serão chamados
+        // e irao para o objeto producer, e será adcionado a uma lista
         return ps;
     }
     private static void getProducer(ResultSet rs, List<Producer> producers) throws SQLException {
