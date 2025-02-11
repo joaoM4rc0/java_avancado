@@ -29,13 +29,20 @@ public class ProducerRepository {
         }
     }
     public static void Update(Producer producer) {
-        String sql = "UPDATE `devdojo_maratona`.`producer`SET name='%s' WHERE id=('%d');".formatted(producer.getName(), producer.getId());
-        try (Connection conn = ConnectionFactory.GetConnection(); Statement stmt = conn.createStatement() ) {
-            int rowsAffected = stmt.executeUpdate(sql);
+        try (Connection conn = ConnectionFactory.GetConnection(); PreparedStatement stmt = preparedStatemenUpdate(conn, producer) ) {
+            int rowsAffected = stmt.executeUpdate();
             log.info("####### atualizando : {}, linhas afetadas {} #######",producer.getId(), rowsAffected);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    private static PreparedStatement preparedStatemenUpdate(Connection conn, Producer producer) throws SQLException {
+        String sql = "UPDATE `devdojo_maratona`.`producer`SET name= ? WHERE id=(?);";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        //cria um PreparedStatement com a consulta SQL fornecida.
+        ps.setString(1, producer.getName());
+        ps.setInt(2, producer.getId());
+        return ps;
     }
     public static List<Producer> FindAll() {
         log.info("###### FindALL produces");
@@ -181,13 +188,13 @@ public class ProducerRepository {
     public static List<Producer> FindByNamePreparedStatement(String name) {
         log.info("###### Find Statement produces");
         // usa um placeholder '?' que vai ser substituido pelo valor de 'nome'
-        String sql = "SELECT id, name FROM devdojo_maratona.producer WHERE name like ?;";
+
         List<Producer> producers = new ArrayList<>();
         // get the connection
         try (Connection conn = ConnectionFactory.GetConnection();
-             PreparedStatement ps = preparedStatement(conn, sql, name);
+             PreparedStatement ps = preparedStatementByName(conn, name);
              // Ele define o valor do placeholder (?) na consulta SQL.
-            ResultSet rs = ps.executeQuery()) {
+             ResultSet rs = ps.executeQuery()) {
             while(rs.next()) {
                 Producer producer = Producer
                         .builder()
@@ -203,7 +210,8 @@ public class ProducerRepository {
         }
         return producers;
     }
-    private static PreparedStatement preparedStatement(Connection conn, String sql, String name) throws SQLException {
+    private static PreparedStatement preparedStatementByName(Connection conn, String name) throws SQLException {
+        String sql = "SELECT id, name FROM devdojo_maratona.producer WHERE name like ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",name));
