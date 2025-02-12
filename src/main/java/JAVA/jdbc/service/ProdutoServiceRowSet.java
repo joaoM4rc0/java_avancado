@@ -13,4 +13,7 @@ public class ProdutoServiceRowSet {
         List<Producer> producers = ProducerRepositoryRowSet.FindByNameRowSet(name);
         return producers;
     }
+    public static void UpdateRowSet(Producer producer) {
+        ProducerRepositoryRowSet.UpdateRowSet(producer);
+    }
 }
