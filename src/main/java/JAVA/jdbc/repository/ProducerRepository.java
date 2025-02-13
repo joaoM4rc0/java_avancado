@@ -220,6 +220,34 @@ public class ProducerRepository {
         // e irao para o objeto producer, e será adcionado a uma lista
         return ps;
     }
+
+    //---------------------------------------
+    public static void saveTransaction(List<Producer> producers) {
+        try (Connection conn = ConnectionFactory.GetConnection()) {
+            conn.setAutoCommit(false);
+            preparedStatementSave(conn, producers);
+            conn.commit();
+        }
+    catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static void preparedStatementSave(Connection conn, List<Producer> producers) throws SQLException {
+        String sql = "INSERT INTO `devdojo_maratona`.`producer` (`name`) VALUES( ? );";
+        boolean shoudRollBack = false;
+        for (Producer p : producers) {
+            try(PreparedStatement ps = conn.prepareStatement(sql)) {
+                log.info("salvando producer {}", p.getName());
+                ps.setString(1, p.getName());
+                if (p.getName().equals("goku")) throw new SQLException("nome nao permitido encontrado");
+                ps.execute();
+            } catch (SQLException e) {
+                shoudRollBack = true;
+                throw new RuntimeException(e);
+            }
+        }
+        if (shoudRollBack) conn.rollback();
+    }
     private static void getProducer(ResultSet rs, List<Producer> producers) throws SQLException {
         rs.beforeFirst();
         rs.next();

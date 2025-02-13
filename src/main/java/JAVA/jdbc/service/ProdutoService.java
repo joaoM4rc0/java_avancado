@@ -61,4 +61,7 @@ public class ProdutoService {
         return ProducerRepository.FindByNamePreparedStatement(name);
     }
 
+    public static void saveTransaction(List<Producer> producers) {
+        ProducerRepository.saveTransaction(producers);
+    }
 }
