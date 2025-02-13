@@ -1,5 +1,6 @@
 package JAVA.jdbc.conexao;
 
+import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.Connection;
@@ -18,6 +19,10 @@ public class ConnectionFactory {
         jdbcRowSet.setUsername(username);
         jdbcRowSet.setPassword(password);
         return jdbcRowSet;
+    }
+    public static CachedRowSet GetCachedRowSet() throws SQLException {
+        CachedRowSet cachedRowSet= RowSetProvider.newFactory().createCachedRowSet();
+        return cachedRowSet;
     }
 }
 

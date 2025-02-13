@@ -14,8 +14,8 @@ public class ConnectionFactoryTest01 {
     private static final Logger log = LogManager.getLogger(ConnectionFactoryTest01.class);
 
     public static void main(String[] args) {
-        Producer producer = Producer.builder().name("lucas").id(14).build();
-        ProdutoServiceRowSet.UpdateRowSet(producer);
+        Producer producer = Producer.builder().name("maria").id(14).build();
+        ProdutoServiceRowSet.UpdateCachedRowSet(producer);
         log.info("--------");
         List<Producer> byNameRowSet = ProdutoServiceRowSet.findByNameRowSet("");
         log.info(byNameRowSet);

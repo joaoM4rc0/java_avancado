@@ -16,4 +16,7 @@ public class ProdutoServiceRowSet {
     public static void UpdateRowSet(Producer producer) {
         ProducerRepositoryRowSet.UpdateRowSet(producer);
     }
+    public static void UpdateCachedRowSet(Producer producer) {
+        ProducerRepositoryRowSet.UpdateCachedRowSet(producer);
+    }
 }

@@ -5,6 +5,7 @@ import JAVA.jdbc.dominio.Producer;
 import JAVA.jdbc.listener.CustomRowSetListener;
 import lombok.extern.log4j.Log4j2;
 
+import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.JdbcRowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,6 +66,28 @@ public class ProducerRepositoryRowSet {
             // modifica o nome do id que eu passar
             jrs.updateRow();
             // atualiza a linha
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void UpdateCachedRowSet(Producer producer) {
+        String sql = "SELECT * FROM producer WHERE (`id` = ?); ";
+        try(CachedRowSet crs = ConnectionFactory.GetCachedRowSet();
+            Connection connection = ConnectionFactory.GetConnection()) {
+            connection.setAutoCommit(false);
+            // O modo de autocommit da conexão é desativado
+        // para garantir que as alterações só sejam confirmadas após a execução bem-sucedida de todas as operações.
+            crs.setCommand(sql);
+            // adiciono ao rowset um listener, que faz uns comandos, como mover o cursor
+            crs.setInt(1, producer.getId());
+            crs.execute(connection);
+            //é chamado para executar a consulta usando a conexão fornecida.
+            if(!crs.next()) return;
+            crs.updateString("name", producer.getName());
+            // modifica o nome do id que eu passar
+            crs.updateRow();
+            // atualiza a linha
+            crs.acceptChanges();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
