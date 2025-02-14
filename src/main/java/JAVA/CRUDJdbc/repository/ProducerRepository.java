@@ -36,7 +36,7 @@ public class ProducerRepository {
         return producers;
     }
     private static PreparedStatement findByName(Connection conn, String name) throws SQLException {
-        String sql = "SELECT id, name FROM devdojo_maratona.producer WHERE name like ?;";
+        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",name));

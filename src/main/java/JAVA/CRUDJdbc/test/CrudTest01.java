@@ -2,12 +2,22 @@ package JAVA.CRUDJdbc.test;
 
 import JAVA.CRUDJdbc.service.ProducerService;
 
-public class CrudTest01 {
-    public static void main(String[] args) {
+import java.util.Scanner;
 
+public class CrudTest01 {
+    private static Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) {
+        int op;
+        while(true) {
+            Menu();
+            op = Integer.parseInt(scanner.nextLine());
+            if (op == 0) break;
+            ProducerService.BuildMenu(op);
+        }
     }
     private static void Menu() {
         System.out.println("digite o numero da sua operação");
-        System.out.println("1. procurar");
+        System.out.println("1. procurar por produto");
+        System.out.println("0. Exit");
     }
 }

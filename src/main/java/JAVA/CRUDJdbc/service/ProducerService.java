@@ -15,6 +15,7 @@ public class ProducerService {
         }
     }
     private static void FindByName() {
+        System.out.println("digite o nome que voce procura");
         String name = scanner.nextLine();
         List<Producer> producers = ProducerRepository.FindByName(name);
         for (int i = 0; i < producers.size(); i++) {
