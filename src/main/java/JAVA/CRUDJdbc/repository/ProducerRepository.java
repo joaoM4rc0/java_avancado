@@ -1,7 +1,7 @@
 package JAVA.CRUDJdbc.repository;
 
+import JAVA.CRUDJdbc.conn.ConnectionFactory;
 import JAVA.CRUDJdbc.dominio.Producer;
-import JAVA.jdbc.conexao.ConnectionFactory;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.*;
@@ -45,5 +45,23 @@ public class ProducerRepository {
         // e irao para o objeto producer, e será adcionado a uma lista
         return ps;
     }
-
+    public static void Delete(int id) {
+        try (Connection conn = ConnectionFactory.GetConnection();
+             PreparedStatement ps = findByNameDelete(conn, id)) {
+           ps.execute();
+            log.info("####### deletando id: {}, #######",id);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static PreparedStatement findByNameDelete(Connection conn, int id) throws SQLException {
+        String sql = "DELETE FROM `devdojo_maratona`.`producer` WHERE id=(?);";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        //cria um PreparedStatement com a consulta SQL fornecida.
+        ps.setInt(1, id);
+        //  adiciona % antes e depois do valor de name, transformando-o em um padrão de busca com LIKE.
+        // por exemplo se name for 'mar' e tiver nomes como: maria, marcos, marcio, todos ele serão chamados
+        // e irao para o objeto producer, e será adcionado a uma lista
+        return ps;
+    }
 }
