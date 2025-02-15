@@ -11,22 +11,17 @@ public class ProducerService {
 
     public static void BuildMenu(int op) {
         switch (op) {
-            case 1: FindByName();
-                    break;
-            case 2: delete();
-                    break;
-            default:
-                throw new IllegalArgumentException("esse numero nao é permitido");
+            case 1 -> FindByName();
+            case 2 -> delete();
+            case 3 -> save();
+            default -> throw new IllegalArgumentException("esse numero nao é permitido");
         }
     }
     private static void FindByName() {
         System.out.println("digite o nome que voce procura");
         String name = SCANNER.nextLine();
-        List<Producer> producers = ProducerRepository.FindByName(name);
-        for (int i = 0; i < producers.size(); i++) {
-            Producer producer = producers.get(i);
-            System.out.printf("[%d] %d - %s%n", i,producer.getId(), producer.getName());
-        }
+        ProducerRepository.FindByName(name)
+                .forEach(p -> System.out.printf("[%d]  %s%n", p.getId(), p.getName()));
     }
 
     private static void delete() {
@@ -37,5 +32,11 @@ public class ProducerService {
         if ("s".equalsIgnoreCase(choice)) {
             ProducerRepository.Delete(id);
         }
+    }
+    private static void save() {
+        System.out.println("digite o nome que vc quer salvar");
+        String name = SCANNER.nextLine();
+        Producer producer = Producer.builder().name(name).build();
+        ProducerRepository.save(producer);
     }
 }

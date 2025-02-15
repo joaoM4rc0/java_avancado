@@ -35,16 +35,6 @@ public class ProducerRepository {
         }
         return producers;
     }
-    private static PreparedStatement findByName(Connection conn, String name) throws SQLException {
-        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like ?;";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        //cria um PreparedStatement com a consulta SQL fornecida.
-        ps.setString(1, String.format("%%%s%%",name));
-        //  adiciona % antes e depois do valor de name, transformando-o em um padrão de busca com LIKE.
-        // por exemplo se name for 'mar' e tiver nomes como: maria, marcos, marcio, todos ele serão chamados
-        // e irao para o objeto producer, e será adcionado a uma lista
-        return ps;
-    }
     public static void Delete(int id) {
         try (Connection conn = ConnectionFactory.GetConnection();
              PreparedStatement ps = findByNameDelete(conn, id)) {
@@ -54,14 +44,38 @@ public class ProducerRepository {
             throw new RuntimeException(e);
         }
     }
+    public static void save(Producer producer) {
+        try (Connection conn = JAVA.jdbc.conexao.ConnectionFactory.GetConnection();
+             PreparedStatement ps = preparedStatemenSave(conn, producer) ) {
+            ps.execute();
+            log.info("####### atualizando : {} #######",producer.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static PreparedStatement preparedStatemenSave(Connection conn, Producer producer) throws SQLException {
+        String sql = "INSERT INTO `devdojo_maratona`.`producer` (`name`) VALUES(?);";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        //cria um PreparedStatement com a consulta SQL fornecida.
+        ps.setString(1, producer.getName());
+        return ps;
+    }
+    private static PreparedStatement findByName(Connection conn, String name) throws SQLException {
+        log.info("salvando producer");
+        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        //cria um PreparedStatement com a consulta SQL fornecida.
+        ps.setString(1, String.format("%%%s%%",name));
+        //  adiciona % antes e depois do valor de name, transformando-o em um padrão de busca com LIKE.
+        // por exemplo se name for 'mar' e tiver nomes como: maria, marcos, marcio, todos ele serão chamados
+        // e irao para o objeto producer, e será adcionaasdo a uma lista
+        return ps;
+    }
     private static PreparedStatement findByNameDelete(Connection conn, int id) throws SQLException {
         String sql = "DELETE FROM `devdojo_maratona`.`producer` WHERE id=(?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setInt(1, id);
-        //  adiciona % antes e depois do valor de name, transformando-o em um padrão de busca com LIKE.
-        // por exemplo se name for 'mar' e tiver nomes como: maria, marcos, marcio, todos ele serão chamados
-        // e irao para o objeto producer, e será adcionado a uma lista
         return ps;
     }
 }
