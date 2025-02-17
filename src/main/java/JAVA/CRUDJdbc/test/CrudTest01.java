@@ -17,9 +17,10 @@ public class CrudTest01 {
     }
     private static void Menu() {
         System.out.println("digite o numero da sua operação");
-        System.out.println("1. procurar por produto");
+        System.out.println("1. procurar por produto (recomendado escolhe-lo antes dos outros)");
         System.out.println("2. deletar produto");
         System.out.println("3. Salvar produto ");
+        System.out.println("4. atualizar o produto ");
         System.out.println("0. Exit");
     }
 }

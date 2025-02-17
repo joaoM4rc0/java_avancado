@@ -35,6 +35,30 @@ public class ProducerRepository {
         }
         return producers;
     }
+    public static boolean FindById(int id) {
+        List<Producer> producers = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.GetConnection();
+             PreparedStatement ps = findById(conn, id);
+             // Ele define o valor do placeholder (?) na consulta SQL.
+             ResultSet rs = ps.executeQuery()) {
+            while(rs.next()) {
+                Producer producer = Producer
+                        .builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id"))
+                        .build();
+                producers.add(producer);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        for (Producer producer : producers) {
+            if (producer.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public static void Delete(int id) {
         try (Connection conn = ConnectionFactory.GetConnection();
              PreparedStatement ps = findByNameDelete(conn, id)) {
@@ -48,7 +72,7 @@ public class ProducerRepository {
         try (Connection conn = JAVA.jdbc.conexao.ConnectionFactory.GetConnection();
              PreparedStatement ps = preparedStatemenSave(conn, producer) ) {
             ps.execute();
-            log.info("####### atualizando : {} #######",producer.getId());
+            log.info("####### salvando : {} #######",producer.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -60,6 +84,25 @@ public class ProducerRepository {
         ps.setString(1, producer.getName());
         return ps;
     }
+    public static void Update(Producer producer) {
+        if(producer == null || producer.getId() <= 0 || producer.getName() == null || producer.getName().trim().isEmpty() ) {
+            throw new IllegalArgumentException("os dados passados são errados");
+        }
+        try (Connection conn = ConnectionFactory.GetConnection(); PreparedStatement ps = preparedStatemenUpdate(conn, producer) ) {
+            ps.execute();
+            log.info("####### atualizando : {} #######",producer.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static PreparedStatement preparedStatemenUpdate(Connection conn, Producer producer) throws SQLException {
+        String sql = "UPDATE `devdojo_maratona`.`producer`SET name= ? WHERE id=(?);";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        //cria um PreparedStatement com a consulta SQL fornecida.
+        ps.setString(1, producer.getName());
+        ps.setInt(2, producer.getId());
+        return ps;
+    }
     private static PreparedStatement findByName(Connection conn, String name) throws SQLException {
         log.info("salvando producer");
         String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like ?;";
@@ -69,6 +112,13 @@ public class ProducerRepository {
         //  adiciona % antes e depois do valor de name, transformando-o em um padrão de busca com LIKE.
         // por exemplo se name for 'mar' e tiver nomes como: maria, marcos, marcio, todos ele serão chamados
         // e irao para o objeto producer, e será adcionaasdo a uma lista
+        return ps;
+    }
+    private static PreparedStatement findById(Connection conn, int id) throws SQLException {
+        String sql = "SELECT * FROM devdojo_maratona.producer WHERE id like ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        //cria um PreparedStatement com a consulta SQL fornecida.
+        ps.setString(1, String.format("%%%s%%",id));
         return ps;
     }
     private static PreparedStatement findByNameDelete(Connection conn, int id) throws SQLException {
