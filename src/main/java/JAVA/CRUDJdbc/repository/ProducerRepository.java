@@ -54,7 +54,7 @@ public class ProducerRepository {
         }
 
         // eu itero sobre a lista, e depois verifico se o id do producer é igual ao id que eu passar
-        // essa verificação impede que o usuario passe um id que nao tem no banco de dados
+        // isso impede que o usuario passe um id que nao tem no banco de daods
         for (Producer producer : producers) {
             if (producer.getId().equals(id)) {
                 return true;
@@ -72,6 +72,9 @@ public class ProducerRepository {
         }
     }
     public static void save(Producer producer) {
+        if (producer == null || producer.getName() == null || producer.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do producer não pode ser vazio");
+        }
         try (Connection conn = JAVA.jdbc.conexao.ConnectionFactory.GetConnection();
              PreparedStatement ps = preparedStatemenSave(conn, producer) ) {
             ps.execute();

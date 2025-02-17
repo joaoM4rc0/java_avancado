@@ -2,6 +2,7 @@ package JAVA.CRUDJdbc.repository;
 
 import JAVA.CRUDJdbc.conn.ConnectionFactory;
 import JAVA.CRUDJdbc.dominio.Anime;
+import JAVA.CRUDJdbc.dominio.Producer;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.Connection;
@@ -24,10 +25,16 @@ public class AnimeRepository {
              // Ele define o valor do placeholder (?) na consulta SQL.
              ResultSet rs = ps.executeQuery()) {
             while(rs.next()) {
+                Producer producer = Producer.builder()
+                        .name(rs.getString("producer_name"))
+                        .id(rs.getInt("producer_id"))
+                        .build();
                 Anime anime = Anime
                         .builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id"))
+                        .episodes(rs.getInt("episodes"))
+                        .producer(producer)
                         .build();
                 animes.add(anime);
                 // a cada iteração do while ele define um novo anime com os valores fornecidos,
@@ -75,6 +82,9 @@ public class AnimeRepository {
         }
     }
     public static void save(Anime anime) {
+        if (anime == null || anime.getName() == null || anime.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do anime não pode ser vazio");
+        }
         try (Connection conn = JAVA.jdbc.conexao.ConnectionFactory.GetConnection();
              PreparedStatement ps = preparedStatemenSave(conn, anime) ) {
             ps.execute();
@@ -84,10 +94,13 @@ public class AnimeRepository {
         }
     }
     private static PreparedStatement preparedStatemenSave(Connection conn, Anime anime) throws SQLException {
-        String sql = "INSERT INTO `devdojo_maratona`.`anime` (`name`) VALUES(?);";
+
+        String sql = "INSERT INTO devdojo_maratona.anime ( name, producer_id, episodes) VALUES( ?, ?, ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, anime.getName());
+        ps.setInt(2, anime.getProducer().getId());
+        ps.setInt(3, anime.getEpisodes());
         return ps;
     }
     public static void Update(Anime anime) {
@@ -102,16 +115,21 @@ public class AnimeRepository {
         }
     }
     private static PreparedStatement preparedStatemenUpdate(Connection conn, Anime anime) throws SQLException {
-        String sql = "UPDATE `devdojo_maratona`.`anime`SET name= ? WHERE id=(?);";
+        String sql = "UPDATE `devdojo_maratona`.`anime`SET name= ?, episodes = ? WHERE id=(?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, anime.getName());
-        ps.setInt(2, anime.getId());
+        ps.setInt(2, anime.getEpisodes());
+        ps.setInt(3, anime.getId());
         return ps;
     }
     private static PreparedStatement findByName(Connection conn, String name) throws SQLException {
         log.info("salvando anime");
-        String sql = "SELECT * FROM devdojo_maratona.anime WHERE name like ?;";
+        String sql = """
+                SELECT a.id, a.name, a.episodes, a.producer_id,p.name as 'producer_name' FROM devdojo_maratona.anime a inner JOIN
+                devdojo_maratona.producer p on a.producer_id = p.id
+                where a.name like ?;
+                """;
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",name));
@@ -121,7 +139,7 @@ public class AnimeRepository {
         return ps;
     }
     private static PreparedStatement findById(Connection conn, int id) throws SQLException {
-        String sql = "SELECT * FROM devdojo_maratona.anime WHERE id like ?;";
+        String sql = "SELECT * FROM devdojo_maratona.anime WHERE id = ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",id));
