@@ -13,7 +13,7 @@ public class CrudTest02 {
             Menu();
             op = Integer.parseInt(scanner.nextLine());
             if (op == 0) break;
-            AnimeService.BuildMenu(op);
+            AnimeService.BuildMenu();
         }
     }
     private static void Menu() {

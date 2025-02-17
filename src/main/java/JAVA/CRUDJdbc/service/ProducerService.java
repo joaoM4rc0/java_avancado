@@ -10,13 +10,19 @@ import java.util.Scanner;
 public class ProducerService {
     private static final Scanner SCANNER = new Scanner(System.in);
 
-    public static void BuildMenu(int op) {
-        switch (op) {
-            case 1 -> FindByName();
-            case 2 -> delete();
-            case 3 -> save();
-            case 4 -> update();
-            default -> throw new IllegalArgumentException("esse numero nao é permitido");
+    public static void BuildMenu() {
+        int op;
+        while(true) {
+            ProducerMenu();
+            op = Integer.parseInt(SCANNER.nextLine());
+            if (op == 0 ) break;
+            switch (op) {
+                case 1 -> FindByName();
+                case 2 -> delete();
+                case 3 -> save();
+                case 4 -> update();
+                default -> throw new IllegalArgumentException("esse numero nao é permitido");
+            }
         }
     }
     private static void FindByName() {
@@ -54,5 +60,13 @@ public class ProducerService {
         }
         Producer producer = Producer.builder().name(name).id(id).build();
         ProducerRepository.Update(producer);
+    }
+    private static void ProducerMenu() {
+        System.out.println("digite o numero da sua operação");
+        System.out.println("1. procurar por produto (recomendado escolhe-lo antes dos outros)");
+        System.out.println("2. deletar produto");
+        System.out.println("3. Salvar produto ");
+        System.out.println("4. atualizar o produto ");
+        System.out.println("0. Exit");
     }
 }

@@ -139,7 +139,7 @@ public class AnimeRepository {
         return ps;
     }
     private static PreparedStatement findById(Connection conn, int id) throws SQLException {
-        String sql = "SELECT * FROM devdojo_maratona.anime WHERE id = ?;";
+        String sql = "SELECT * FROM devdojo_maratona.anime WHERE id like ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",id));

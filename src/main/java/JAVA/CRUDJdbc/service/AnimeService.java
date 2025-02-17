@@ -4,19 +4,25 @@ import JAVA.CRUDJdbc.dominio.Anime;
 import JAVA.CRUDJdbc.dominio.Producer;
 import JAVA.CRUDJdbc.repository.AnimeRepository;
 import JAVA.CRUDJdbc.repository.ProducerRepository;
+import JAVA.CRUDJdbc.test.CrudTest01;
 
 import java.util.Scanner;
 
 public class AnimeService {
     private static final Scanner SCANNER = new Scanner(System.in);
-
-    public static void BuildMenu(int op) {
-        switch (op) {
-            case 1 -> FindByName();
-            case 2 -> delete();
-            case 3 -> save();
-            case 4 -> update();
-            default -> throw new IllegalArgumentException("esse numero nao é permitido");
+    public static void BuildMenu() {
+        int op;
+        while (true) {
+            AnimeMenu();
+            op = Integer.parseInt(SCANNER.nextLine());
+            if (op == 0 ) break;
+            switch (op) {
+                case 1 -> FindByName();
+                case 2 -> delete();
+                case 3 -> save();
+                case 4 -> update();
+                default -> throw new IllegalArgumentException("esse numero nao é permitido");
+            }
         }
     }
     private static void FindByName() {
@@ -72,7 +78,12 @@ public class AnimeService {
         Anime anime = Anime.builder().name(name).id(id).episodes(eps).build();
         AnimeRepository.Update(anime);
     }
-    private static void findByIdProducers() {
-
+    private static void AnimeMenu() {
+        System.out.println("digite o numero da sua operação");
+        System.out.println("1. procurar por anime (recomendado escolhe-lo antes dos outros)");
+        System.out.println("2. deletar anime");
+        System.out.println("3. Salvar anime ");
+        System.out.println("4. atualizar o anime ");
+        System.out.println("0. Exit");
     }
 }
