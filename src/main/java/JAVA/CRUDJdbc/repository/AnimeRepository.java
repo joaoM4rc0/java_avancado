@@ -1,62 +1,65 @@
 package JAVA.CRUDJdbc.repository;
 
 import JAVA.CRUDJdbc.conn.ConnectionFactory;
-import JAVA.CRUDJdbc.dominio.Producer;
+import JAVA.CRUDJdbc.dominio.Anime;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
-public class ProducerRepository {
-    public static List<Producer> FindByName(String name) {
-        log.info("###### Producer by name {}", name);
+public class AnimeRepository {
+    public static List<Anime> FindByName(String name) {
+        log.info("###### Anime by name {}", name);
         // usa um placeholder '?' que vai ser substituido pelo valor de 'nome'
 
-        List<Producer> producers = new ArrayList<>();
+        List<Anime> animes = new ArrayList<>();
         // get the connection
         try (Connection conn = ConnectionFactory.GetConnection();
              PreparedStatement ps = findByName(conn, name);
              // Ele define o valor do placeholder (?) na consulta SQL.
              ResultSet rs = ps.executeQuery()) {
             while(rs.next()) {
-                Producer producer = Producer
+                Anime anime = Anime
                         .builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id"))
                         .build();
-                producers.add(producer);
-                // a cada iteração do while ele define um novo producer com os valores fornecidos,
+                animes.add(anime);
+                // a cada iteração do while ele define um novo anime com os valores fornecidos,
                 // e adiciona a uma lista
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return producers;
+        return animes;
     }
     public static boolean FindById(int id) {
-        List<Producer> producers = new ArrayList<>();
+        List<Anime> animes = new ArrayList<>();
         try (Connection conn = ConnectionFactory.GetConnection();
              PreparedStatement ps = findById(conn, id);
              // Ele define o valor do placeholder (?) na consulta SQL.
              ResultSet rs = ps.executeQuery()) {
             while(rs.next()) {
-                Producer producer = Producer
+                Anime anime = Anime
                         .builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id"))
                         .build();
-                producers.add(producer);
+                animes.add(anime);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        // eu itero sobre a lista, e depois verifico se o id do producer é igual ao id que eu passar
+        // eu itero sobre a lista, e depois verifico se o id do anime é igual ao id que eu passar
         // essa verificação impede que o usuario passe um id que nao tem no banco de dados
-        for (Producer producer : producers) {
-            if (producer.getId().equals(id)) {
+        for (Anime anime : animes) {
+            if (anime.getId().equals(id)) {
                 return true;
             }
         }
@@ -71,61 +74,61 @@ public class ProducerRepository {
             throw new RuntimeException(e);
         }
     }
-    public static void save(Producer producer) {
+    public static void save(Anime anime) {
         try (Connection conn = JAVA.jdbc.conexao.ConnectionFactory.GetConnection();
-             PreparedStatement ps = preparedStatemenSave(conn, producer) ) {
+             PreparedStatement ps = preparedStatemenSave(conn, anime) ) {
             ps.execute();
-            log.info("####### salvando : {} #######",producer.getId());
+            log.info("####### salvando : {} #######",anime.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    private static PreparedStatement preparedStatemenSave(Connection conn, Producer producer) throws SQLException {
-        String sql = "INSERT INTO `devdojo_maratona`.`producer` (`name`) VALUES(?);";
+    private static PreparedStatement preparedStatemenSave(Connection conn, Anime anime) throws SQLException {
+        String sql = "INSERT INTO `devdojo_maratona`.`anime` (`name`) VALUES(?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
-        ps.setString(1, producer.getName());
+        ps.setString(1, anime.getName());
         return ps;
     }
-    public static void Update(Producer producer) {
-        if(producer == null || producer.getId() <= 0 || producer.getName() == null || producer.getName().trim().isEmpty() ) {
+    public static void Update(Anime anime) {
+        if(anime == null || anime.getId() <= 0 || anime.getName() == null || anime.getName().trim().isEmpty() ) {
             throw new IllegalArgumentException("os dados passados são errados");
         }
-        try (Connection conn = ConnectionFactory.GetConnection(); PreparedStatement ps = preparedStatemenUpdate(conn, producer) ) {
+        try (Connection conn = ConnectionFactory.GetConnection(); PreparedStatement ps = preparedStatemenUpdate(conn, anime) ) {
             ps.execute();
-            log.info("####### atualizando : {} #######",producer.getId());
+            log.info("####### atualizando : {} #######",anime.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    private static PreparedStatement preparedStatemenUpdate(Connection conn, Producer producer) throws SQLException {
-        String sql = "UPDATE `devdojo_maratona`.`producer`SET name= ? WHERE id=(?);";
+    private static PreparedStatement preparedStatemenUpdate(Connection conn, Anime anime) throws SQLException {
+        String sql = "UPDATE `devdojo_maratona`.`anime`SET name= ? WHERE id=(?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
-        ps.setString(1, producer.getName());
-        ps.setInt(2, producer.getId());
+        ps.setString(1, anime.getName());
+        ps.setInt(2, anime.getId());
         return ps;
     }
     private static PreparedStatement findByName(Connection conn, String name) throws SQLException {
-        log.info("salvando producer");
-        String sql = "SELECT * FROM devdojo_maratona.producer WHERE name like ?;";
+        log.info("salvando anime");
+        String sql = "SELECT * FROM devdojo_maratona.anime WHERE name like ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",name));
         //  adiciona % antes e depois do valor de name, transformando-o em um padrão de busca com LIKE.
         // por exemplo se name for 'mar' e tiver nomes como: maria, marcos, marcio, todos ele serão chamados
-        // e irao para o objeto producer, e será adcionaasdo a uma lista
+        // e irao para o objeto anime, e será adcionaasdo a uma lista
         return ps;
     }
     private static PreparedStatement findById(Connection conn, int id) throws SQLException {
-        String sql = "SELECT * FROM devdojo_maratona.producer WHERE id like ?;";
+        String sql = "SELECT * FROM devdojo_maratona.anime WHERE id like ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setString(1, String.format("%%%s%%",id));
         return ps;
     }
     private static PreparedStatement findByNameDelete(Connection conn, int id) throws SQLException {
-        String sql = "DELETE FROM `devdojo_maratona`.`producer` WHERE id=(?);";
+        String sql = "DELETE FROM `devdojo_maratona`.`anime` WHERE id=(?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         //cria um PreparedStatement com a consulta SQL fornecida.
         ps.setInt(1, id);
