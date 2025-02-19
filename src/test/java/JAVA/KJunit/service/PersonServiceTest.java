@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class PersonServiceTest {
     private Person adult;
     private Person notAdult;
@@ -29,7 +31,12 @@ class PersonServiceTest {
     @Test
     @DisplayName("retorna uma lista de pessoas adultas")
     void retorna_ListaDePessoas_comIdade_maior_que_18() {
-
+        Person person1 = new Person(17);
+        Person person2 = new Person(18);
+        Person person3 = new Person(22);
+        Person person4 = new Person(19);
+        List<Person> personList = List.of(person1, person2, person3, person4);
+        Assertions.assertEquals(3, personService.retorna_ListaFiltrada_porIdade(personList).size());
     }
     @Test
     @DisplayName("idade tá sendo passada como nula, e vai lançar um nullpointerException")
